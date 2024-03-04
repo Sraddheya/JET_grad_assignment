@@ -8,6 +8,8 @@ Coding assignment for the JET Graduate Scheme 2024
 2. Navigate to the correct directpry in your consol "cd JET_grad_assignment".
 3. Run it by typing "node main.js" in the console and inputting the post codes as requested.
 
+## Screenshot Example
+
 ![Console screenshot 1](https://github.com/sraddheya/JET_grad_assignment/blob/main/JET_console1.png)
 ![Console screenshot 2](https://github.com/sraddheya/JET_grad_assignment/blob/main/JET_console2.png)
 
