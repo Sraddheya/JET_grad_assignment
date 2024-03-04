@@ -12,7 +12,6 @@ class restaurant {
     }
 }
 
-
 function cleanPostalCode(postalCode){
     console.log(postalCode);
     // Turn to upper case and remove non alphanumeric characters
@@ -75,4 +74,10 @@ async function getData(postalCode) {
     }
 }
 
-getData("SL6 1AW");
+document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let postalCode = document.getElementById('postalCode').value;
+    console.log("Hello World");
+    console.log(postalCode);
+ });
+ 
