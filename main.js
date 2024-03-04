@@ -13,10 +13,8 @@ class restaurant {
 }
 
 function cleanPostalCode(postalCode){
-    console.log(postalCode);
     // Turn to upper case and remove non alphanumeric characters
     newPostalCode = postalCode.toUpperCase().replace(/[^0-9a-z]/gi, '');
-    console.log(newPostalCode);
     //Matches length
     if (newPostalCode.length < 5 || newPostalCode > 7){return null;}
     // Matches UK postal code pattern
@@ -74,10 +72,25 @@ async function getData(postalCode) {
     }
 }
 
-document.querySelector('form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    let postalCode = document.getElementById('postalCode').value;
-    console.log("Hello World");
-    console.log(postalCode);
- });
- 
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  
+readline.question('Enter a valid UK post code: ', postalCode => {
+    try {
+        //Formatting Postal Code for Endpoint
+        let cleanedPostalCode = cleanPostalCode(postalCode);
+        if (cleanedPostalCode === null){
+            throw new Error('Address provided is not formatted correctly');
+        }
+
+        //Getting data from Endpoint
+        getData(cleanedPostalCode);
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+    }
+
+    console.log(`This was your ${postalCode}`);
+    readline.close();
+});
