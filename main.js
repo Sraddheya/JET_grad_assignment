@@ -12,29 +12,24 @@ class restaurant {
     }
 }
 
-function cleanPostalCode(postalCode){
-    // Turn to upper case and remove non alphanumeric characters
-    newPostalCode = postalCode.toUpperCase().replace(/[^0-9a-z]/gi, '');
-    //Matches length
-    if (newPostalCode.length < 5 || newPostalCode > 7){return null;}
-    // Matches UK postal code pattern
-    regex1 = /[A-Z]{1,2}[0-9]{2,3}[A-Z]{2}/;
-    regex2 = /[A-Z]{1,2}[0-9][A-Z][0-9][A-Z]{2}/;
-    if (regex1.test(newPostalCode) || regex2.test(newPostalCode)){
-        return newPostalCode;
-    } else {
-        return null;
-    }
-    //Error
-    //Throw error instead of returning anything
+function getCleanPostalCode(postalCode){
+    return postalCode.toUpperCase().replace(/[^0-9a-z]/gi, '');
 }
 
-// console.log(cleanPostalCode("EC4M7RF") === "EC4M7RF");
-// console.log(cleanPostalCode("EC4M7rf") === "EC4M7RF");
-// console.log(cleanPostalCode("EC4M 7RF") === "EC4M7RF");
-// console.log(cleanPostalCode("EC4M7RF~!@#$%^&*()-_+=[]{}|;:'\",.<>?/`") === "EC4M7RF");
-// console.log(cleanPostalCode("EC4M\n7RF") === "EC4M7RF");
+function isValidPostCode(postalCode){
+    regex1 = /[A-Z]{1}[0-9]{2}[A-Z]{2}/;
+    regex2 = /[A-Z]{1}[0-9]{3}[A-Z]{2}/;
+    regex3 = /[A-Z]{2}[0-9]{2}[A-Z]{2}/;
+    regex4 = /[A-Z]{2}[0-9]{3}[A-Z]{2}/;
+    regex5 = /[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1}[A-Z]{2}/;
+    regex6 = /[A-Z]{2}[0-9]{1}[A-Z]{1}[0-9]{1}[A-Z]{2}/;
 
+    if (regex1.test(postalCode) || regex2.test(postalCode) || regex3.test(postalCode) || regex4.test(postalCode) || regex5.test(postalCode) || regex6.test(postalCode)){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 async function getData(postalCode) {
     let rests = [];
@@ -73,24 +68,29 @@ async function getData(postalCode) {
 }
 
 const readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-  
-readline.question('Enter a valid UK post code: ', postalCode => {
-    try {
-        //Formatting Postal Code for Endpoint
-        let cleanedPostalCode = cleanPostalCode(postalCode);
-        if (cleanedPostalCode === null){
-            throw new Error('Address provided is not formatted correctly');
-        }
-
-        //Getting data from Endpoint
-        getData(cleanedPostalCode);
-    } catch (error) {
-        console.error('An error occurred:', error.message);
-    }
-
-    console.log(`This was your ${postalCode}`);
-    readline.close();
+  input: process.stdin,
+  output: process.stdout
 });
+
+async function processInput() {
+    readline.question('Enter a valid UK post code or type "exit" to quite: ', async (input) => {
+        if (input.toLowerCase() === 'exit') {
+            readline.close();
+        } else {
+            postCode = getCleanPostalCode(input);
+            if (isValidPostCode(postCode)) {
+                try {
+                    await getData(postCode);
+                    await processInput();
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            } else {
+                console.error('Invalid input. Please try again.');
+                await processInput();
+            }
+        }
+    });
+  }
+  
+processInput();
