@@ -2,9 +2,9 @@ const ENDPOINT = "https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/b
 const NUMTOPRINT = 10;
 
 class restaurant {
-    constructor(name, rating, cuisines, city, firstLine, postalCode) {
+    constructor(name = null, rating = null, cuisines = null, city = null, firstLine = null, postalCode = null) {
         this.name = name;
-        this.rating = rating;
+        this.rating = rating ;
         this.cuisines = cuisines;
         this.city = city;
         this.firstLine = firstLine;
@@ -37,13 +37,15 @@ async function getData(postalCode) {
     try {
         // Fetch data from API endpoint
         const response = await fetch(ENDPOINT + encodeURIComponent(postalCode));
-        
         if (!response.ok){
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
         // Extract desired data in json form
         const data = await response.json();
+        if (data.restaurants.length === 0){
+            throw new Error(`There is no restaurant data for this post code.`);
+        }
         for (const r of data.restaurants){
             let cui = [];
             for (const c of r.cuisines){
@@ -52,15 +54,15 @@ async function getData(postalCode) {
             const s = new restaurant(r.name, r.rating.starRating, cui, r.address.city, r.address.firstLine, r.address.postalCode);
             rests.push(s);
         }
-        //TO DOOOOOOOO-----------------------------------------------------------------------
-        //What to do if some fields not there  data.fish || "default value";
 
         // Output first x number of resturants
-        for (let i = 0; i < NUMTOPRINT; i ++){
+        printLimit = Math.min(NUMTOPRINT, rests.length);
+        if (rests.length < NUMTOPRINT){
+            console.log(`There are only ${rests.length} restaurants in this area`)
+        }
+        for (let i = 0; i < printLimit; i ++){
             console.log(rests[i]);
         }
-        //TO DOOOOOOOO-----------------------------------------------------------------------
-        //What if not enough restaurants to print
 
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -79,12 +81,8 @@ async function processInput() {
         } else {
             postCode = getCleanPostalCode(input);
             if (isValidPostCode(postCode)) {
-                try {
-                    await getData(postCode);
-                    await processInput();
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
+                await getData(postCode);
+                await processInput();
             } else {
                 console.error('Invalid input. Please try again.');
                 await processInput();
