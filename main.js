@@ -1,13 +1,17 @@
-//const endPoint = "https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/bypostcode/";
+const ENDPOINT = "https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/bypostcode/";
+const NUMTOPRINT = 10;
 
-function restaurant(name, rating, cuisines, city, firstLine, postalCode){
-    this.name = name;
-    this.rating = rating;
-    this.cuisines = cuisines;
-    this.city = city;
-    this.firstLine = firstLine;
-    this.postalCode = postalCode;
+class restaurant {
+    constructor(name, rating, cuisines, city, firstLine, postalCode) {
+        this.name = name;
+        this.rating = rating;
+        this.cuisines = cuisines;
+        this.city = city;
+        this.firstLine = firstLine;
+        this.postalCode = postalCode;
+    }
 }
+
 
 function cleanPostalCode(postalCode){
     console.log(postalCode);
@@ -22,27 +26,31 @@ function cleanPostalCode(postalCode){
     if (regex1.test(newPostalCode) || regex2.test(newPostalCode)){
         return newPostalCode;
     } else {
-        return none;
+        return null;
     }
+    //Error
+    //Throw error instead of returning anything
 }
 
-console.log(cleanPostalCode("EC4M7RF") === "EC4M7RF");
-console.log(cleanPostalCode("EC4M7rf") === "EC4M7RF");
-console.log(cleanPostalCode("EC4M 7RF") === "EC4M7RF");
-console.log(cleanPostalCode("EC4M7RF~!@#$%^&*()-_+=[]{}|;:'\",.<>?/`") === "EC4M7RF");
-console.log(cleanPostalCode("EC4M\n7RF") === "EC4M7RF");
+// console.log(cleanPostalCode("EC4M7RF") === "EC4M7RF");
+// console.log(cleanPostalCode("EC4M7rf") === "EC4M7RF");
+// console.log(cleanPostalCode("EC4M 7RF") === "EC4M7RF");
+// console.log(cleanPostalCode("EC4M7RF~!@#$%^&*()-_+=[]{}|;:'\",.<>?/`") === "EC4M7RF");
+// console.log(cleanPostalCode("EC4M\n7RF") === "EC4M7RF");
 
 
-async function getData() {
+async function getData(postalCode) {
     let rests = [];
 
     try {
-        const response = await fetch("https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/bypostcode/EC4M7RF");
+        // Fetch data from API endpoint
+        const response = await fetch(ENDPOINT + encodeURIComponent(postalCode));
         
         if (!response.ok){
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
+        // Extract desired data in json form
         const data = await response.json();
         for (const r of data.restaurants){
             let cui = [];
@@ -52,11 +60,19 @@ async function getData() {
             const s = new restaurant(r.name, r.rating.starRating, cui, r.address.city, r.address.firstLine, r.address.postalCode);
             rests.push(s);
         }
+        //TO DOOOOOOOO-----------------------------------------------------------------------
+        //What to do if some fields not there  data.fish || "default value";
 
-        console.log(rests);
+        // Output first x number of resturants
+        for (let i = 0; i < NUMTOPRINT; i ++){
+            console.log(rests[i]);
+        }
+        //TO DOOOOOOOO-----------------------------------------------------------------------
+        //What if not enough restaurants to print
+
     } catch (error) {
         console.error('Error fetching data:', error);
     }
 }
 
-//getData();
+getData("SL6 1AW");
