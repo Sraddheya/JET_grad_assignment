@@ -58,10 +58,15 @@ async function getData(postalCode) {
         // Output first x number of resturants
         printLimit = Math.min(NUMTOPRINT, rests.length);
         if (rests.length < NUMTOPRINT){
-            console.log(`There are only ${rests.length} restaurants in this area`)
+            console.log(`There are only ${rests.length} restaurants in this area`);
         }
         for (let i = 0; i < printLimit; i ++){
-            console.log(rests[i]);
+            console.log(`\nRestaurant ${i + 1}`);
+            console.log(`Name: ${rests[i].name}`);
+            console.log(`Rating: ${rests[i].rating}`);
+            console.log(`Cuisines: ${rests[i].cuisines}`);
+            console.log(`Address: ${rests[i].firstLine}, ${rests[i].city}, ${rests[i].postalCode}`);
+            //console.log(rests[i]);
         }
 
     } catch (error) {
